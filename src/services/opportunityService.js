@@ -1,5 +1,5 @@
-const Opportunity = require(",/models/Opportunity");
-const Application = require("./models/Application");
+const Opportunity = require("../models/opportunity");
+const Application = require("../models/Appilication");
 
 const createOpportunity = async (data, userId) => {
   return Opportunity.create({

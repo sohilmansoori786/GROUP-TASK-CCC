@@ -1,12 +1,12 @@
 const argon2 = require("argon2");
-const User = require("/models/User");
+const User = require("../models/user");
 const RefreshToken = require("../models/RefreshToken");
 
 const {
   createAccessToken,
   createRefreshToken,
   hashToken
-} = require("../utils/tokens");
+} = require("../utils/token");
 
 const signup = async ({ name, email, password }) => {
   const normalizedEmail = email.toLowerCase().trim();
