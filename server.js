@@ -1,39 +1,61 @@
+require("dotenv").config();
+
 const express = require("express");
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
 const cors = require("cors");
+const helmet = require("helmet");
 
-const authRoutes = require("./routes/authRoutes");
-const opportunityRoutes = require("./routes/opportunityRoutes");
-const userRoutes = require("./routes/userRoutes");
+const connectDB = require("./src/config/db");
 
-dotenv.config();
+const authRoutes = require("./src/routes/authRoutes");
+const userRoutes = require("./src/routes/userRoutes");
+const opportunityRoutes = require("./src/routes/opportunityRoutes");
+const adminRoutes = require("./src/routes/adminRoutes");
+
+const errorHandler = require("./src/middleware/errorHandler");
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+connectDB();
+
+app.use(helmet());
+
+app.use(
+  cors({
+    origin: true
+  })
+);
+
+app.use(
+  express.json({
+    limit: "100kb"
+  })
+);
 
 app.get("/", (req, res) => {
-    res.json({
-        success: true,
-        message: "Opportunity Hub Backend Running"
-    });
+  res.json({
+    success: true,
+    message: "Opportunity Hub Backend Running"
+  });
 });
 
-app.use("/api/auth", authRoutes);
-app.use("/api/opportunities", opportunityRoutes);
-app.use("/api/users", userRoutes);
+app.use("/api/v1/auth", authRoutes);
 
-mongoose
-    .connect(process.env.MONGO_URI)
-    .then(() => {
-        console.log("MongoDB connected");
+app.use("/api/v1/users", userRoutes);
 
-        app.listen(process.env.PORT, () => {
-            console.log(`Server running on port ${process.env.PORT}`);
-        });
-    })
-    .catch((error) => {
-        console.log("MongoDB connection error:", error.message);
-    });
+app.use(
+  "/api/v1/opportunities",
+  opportunityRoutes
+);
+
+app.use(
+  "/api/v1/admin",
+  adminRoutes
+);
+
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 8000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
