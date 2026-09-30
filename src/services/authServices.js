@@ -1,5 +1,5 @@
 const argon2 = require("argon2");
-const User = require("../models/User");
+const User = require("/models/User");
 const RefreshToken = require("../models/RefreshToken");
 
 const {
