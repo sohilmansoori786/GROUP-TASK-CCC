@@ -1,12 +1,19 @@
-const authService = require("../services/authService");
+const User = require("/models/User");
 
-const signup = async (req, res, next) => {
+const getProfile = async (req, res, next) => {
   try {
-    const user = await authService.signup(req.body);
+    const user = await User.findById(req.user.userId)
+      .select("-password");
 
-    res.status(201).json({
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    res.json({
       success: true,
-      message: "Account created successfully",
       user
     });
   } catch (error) {
@@ -14,14 +21,58 @@ const signup = async (req, res, next) => {
   }
 };
 
-const login = async (req, res, next) => {
+const updateSkills = async (req, res, next) => {
   try {
-    const result = await authService.login(req.body);
+    const { skills } = req.body;
 
-    res.status(200).json({
+    if (!Array.isArray(skills)) {
+      return res.status(400).json({
+        success: false,
+        message: "Skills must be an array"
+      });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user.userId,
+      {
+        skills
+      },
+      {
+        new: true
+      }
+    ).select("-password");
+
+    res.json({
       success: true,
-      message: "Login successful",
-      ...result
+      message: "Skills updated",
+      user
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const saveOpportunity = async (req, res, next) => {
+  try {
+    const { opportunityId } = req.params;
+
+    const user = await User.findById(req.user.userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    if (!user.savedOpportunities.includes(opportunityId)) {
+      user.savedOpportunities.push(opportunityId);
+      await user.save();
+    }
+
+    res.json({
+      success: true,
+      message: "Opportunity saved"
     });
   } catch (error) {
     next(error);
@@ -29,6 +80,7 @@ const login = async (req, res, next) => {
 };
 
 module.exports = {
-  signup,
-  login
+  getProfile,
+  updateSkills,
+  saveOpportunity
 };
