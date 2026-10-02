@@ -10,6 +10,7 @@ const authRoutes = require("./src/routes/authRoutes");
 const userRoutes = require("./src/routes/userRoutes");
 const opportunityRoutes = require("./src/routes/opportunityRoutes");
 const adminRoutes = require("./src/routes/adminRoutes");
+const recommendationRoutes = require("./src/routes/recommendationRoutes");
 
 const errorHandler = require("./src/middleware/errorHandler");
 
@@ -50,6 +51,11 @@ app.use(
 app.use(
   "/api/v1/admin",
   adminRoutes
+);
+
+app.use(
+  "/api/v1/recommendations",
+  recommendationRoutes
 );
 
 app.use(errorHandler);

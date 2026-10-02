@@ -1,22 +1,37 @@
+const axios = require("axios");
+
 const getRecommendations = async (user) => {
-  /*
-    Later ML team ka API yahan call hoga.
+    try {
+        const response = await axios.post(
+            `${process.env.ML_API_URL}/recommend`,
+            {
+                domain: user.domain,
+                skills: Array.isArray(user.skills)
+                    ? user.skills.join(", ")
+                    : user.skills,
+                year: user.year,
+                branch: user.branch,
+                mode: user.mode || "Any",
+                top_n: 10
+            },
+            {
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
+        );
 
-    Example:
+        return response.data;
+    } catch (error) {
+        console.error(
+            "ML API Error:",
+            error.response?.data || error.message
+        );
 
-    user skills:
-    ["JavaScript", "Node.js", "MongoDB"]
-
-    ML service:
-    POST /predict
-
-    Backend:
-    user -> ML API -> recommended opportunities
-  */
-
-  return [];
+        throw new Error("Failed to get recommendations");
+    }
 };
 
 module.exports = {
-  getRecommendations
+    getRecommendations
 };
