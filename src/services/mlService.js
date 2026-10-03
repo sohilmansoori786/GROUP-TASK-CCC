@@ -1,6 +1,7 @@
 const axios = require("axios");
                                                  //9 ML api
-const ML_API_URL = process.env.ML_API_URL;
+const ML_API_URL_1 = process.env.ML_API_URL_1;
+const ML_API_URL_2 = process.env.ML_API_URL_2;
 
 const studentRecommend = async (data) => {
   const response = await axios.post(
