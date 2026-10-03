@@ -1,0 +1,735 @@
+## 🔐 Authentication APIs
+
+### Base URL
+`http://localhost:8000`
+
+---
+
+## 1️⃣ USER SIGNUP
+
+**POST**
+`/api/auth/signup`
+
+**Body:**
+```json
+{
+  "name": "Test User",
+  "email": "user@gmail.com",
+  "password": "12345678",
+  "role": "user"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "User registered successfully",
+  "user": {
+    "id": "...",
+    "name": "Test User",
+    "email": "user@gmail.com",
+    "role": "user"
+  },
+  "accessToken": "..."
+}
+```
+
+---
+
+## 2️⃣ ORGANIZER SIGNUP
+
+**POST**
+`/api/auth/signup`
+
+**Body:**
+```json
+{
+  "name": "Event Organizer",
+  "email": "organizer@gmail.com",
+  "password": "12345678",
+  "role": "organizer"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "User registered successfully",
+  "user": {
+    "id": "...",
+    "name": "Event Organizer",
+    "email": "organizer@gmail.com",
+    "role": "organizer"
+  },
+  "accessToken": "..."
+}
+```
+
+---
+
+## 3️⃣ USER LOGIN
+
+**POST**
+`/api/auth/login`
+
+**Body:**
+```json
+{
+  "email": "user@gmail.com",
+  "password": "12345678"
+}
+```
+
+---
+
+## 4️⃣ ORGANIZER LOGIN
+
+**POST**
+`/api/auth/login`
+
+**Body:**
+```json
+{
+  "email": "organizer@gmail.com",
+  "password": "12345678"
+}
+```
+
+---
+
+## 5️⃣ ADMIN LOGIN
+
+**POST**
+`/api/auth/login`
+
+**Body:**
+```json
+{
+  "email": "admin@gmail.com",
+  "password": "ADMIN_PASSWORD"
+}
+```
+
+Admin ka role backend/database mein `admin` hona chahiye.
+
+**Response:**
+```json
+{
+  "message": "Login successful",
+  "user": {
+    "id": "...",
+    "name": "Admin",
+    "email": "admin@gmail.com",
+    "role": "admin"
+  },
+  "accessToken": "..."
+}
+```
+
+---
+
+### 🔑 Authorization
+
+Protected APIs ke liye header:
+
+`Authorization: Bearer <accessToken>`
+
+# Event Management System — App API Guide
+
+This document explains how the frontend communicates with the Node.js backend and uses the ML-integrated APIs.
+
+## 1. Architecture
+
+```text
+Frontend
+   |
+   | HTTP Requests
+   v
+Node.js / Express Backend
+   |
+   | Axios
+   v
+ML / FastAPI Service
+```
+
+The frontend should communicate **only with the Node.js backend**.
+
+The frontend should **not directly call the ML/FastAPI service**.
+
+---
+
+## 2. Backend Base URL
+
+### Local Development
+
+```text
+http://localhost:8000
+```
+
+API base:
+
+```text
+http://localhost:8000/api/v1
+```
+
+Example:
+
+```text
+http://localhost:8000/api/v1/ml/student/recommend
+```
+
+---
+
+## 3. Authentication
+
+Protected APIs require the access token in the request header:
+
+```http
+Authorization: Bearer <ACCESS_TOKEN>
+```
+
+Example:
+
+```js
+const response = await fetch(
+  "http://localhost:8000/api/v1/ml/student/recommend",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify(data)
+  }
+);
+```
+
+Do not send MongoDB credentials, JWT secrets, or ML service credentials from the frontend.
+
+---
+
+## 4. User Roles
+
+The backend supports:
+
+```text
+USER
+ORGANIZER
+ADMIN
+```
+
+ML APIs are protected according to these roles.
+
+---
+
+# 5. ML API Endpoints
+
+## 5.1 Student Recommendations
+
+### Endpoint
+
+```http
+POST /api/v1/ml/student/recommend
+```
+
+### Role
+
+```text
+USER
+```
+
+### Request Body
+
+```json
+{
+  "domain": "Technology",
+  "skills": "Python, Machine Learning",
+  "year": "2",
+  "branch": "CSE",
+  "mode": "Any",
+  "top_n": 5
+}
+```
+
+### Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "recommendations": [
+      {
+        "title": "AI Hackathon",
+        "organization": "ABC Organization",
+        "domain": "Technology",
+        "category": "Hackathon",
+        "mode": "Online",
+        "deadline": "2026-10-20",
+        "required_skills": "Python, Machine Learning",
+        "application_url": "https://example.com",
+        "score": 0.91,
+        "matched": "Python, Machine Learning",
+        "missing": ""
+      }
+    ]
+  }
+}
+```
+
+Use this API on the student dashboard to display personalized opportunities.
+
+---
+
+# 6. Organizer APIs
+
+## 6.1 Predict Event Registrations
+
+### Endpoint
+
+```http
+POST /api/v1/ml/organizer/predict-registrations
+```
+
+### Role
+
+```text
+ORGANIZER
+```
+
+### Request Body
+
+```json
+{
+  "domain": "Technology",
+  "category": "Hackathon",
+  "mode": "Online",
+  "prize_money_inr": 50000,
+  "application_fee_inr": 0,
+  "certificate_available": 1,
+  "duration_days": 3,
+  "deadline_to_start_days": 15,
+  "stipend_inr": 0,
+  "team_required": 1
+}
+```
+
+### Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "predicted_registrations": 1234
+  }
+}
+```
+
+Use this while creating or editing an event.
+
+---
+
+## 6.2 Event Demand
+
+### Endpoint
+
+```http
+GET /api/v1/ml/organizer/event-demand
+```
+
+### Role
+
+```text
+ORGANIZER
+```
+
+No request body is required.
+
+### Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "total_events": 10,
+    "event_status": {
+      "pending": 3,
+      "approved": 6,
+      "rejected": 1
+    },
+    "mode_distribution": {
+      "online": 5,
+      "offline": 3,
+      "hybrid": 2
+    }
+  }
+}
+```
+
+Use this for organizer dashboard charts and statistics.
+
+---
+
+## 6.3 Organizer Analytics
+
+### Endpoint
+
+```http
+GET /api/v1/ml/organizer/analytics
+```
+
+### Role
+
+```text
+ORGANIZER
+```
+
+No request body is required.
+
+### Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "platform_statistics": {
+      "total_users": 100,
+      "total_organizers": 20,
+      "total_events": 50
+    },
+    "organizer_statistics": {
+      "pending_verification": 5,
+      "verified": 15
+    },
+    "event_statistics": {
+      "pending": 10,
+      "approved": 35,
+      "rejected": 5
+    }
+  }
+}
+```
+
+Use this on the organizer analytics/dashboard page.
+
+---
+
+# 7. Admin Event Risk Detection
+
+### Endpoint
+
+```http
+POST /api/v1/ml/admin/event-risk
+```
+
+### Role
+
+```text
+ADMIN
+```
+
+### Request Body
+
+```json
+{
+  "popularity_score": 75,
+  "registration_count": 1200,
+  "synthetic_views": 5000,
+  "prize_money_inr": 50000,
+  "application_fee_inr": 0,
+  "stipend_inr": 0,
+  "duration_days": 2,
+  "deadline_to_start_days": 10,
+  "certificate_available": 1,
+  "team_required": 1,
+  "team_size_fixed": 4,
+  "mode_fixed": 1,
+  "prize_category_conflict": 0,
+  "stipend_category_conflict": 0
+}
+```
+
+### Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "admin_status": "NORMAL",
+    "risk_score": 32.45,
+    "review_priority": "LOW",
+    "anomaly_score": 0.1755
+  }
+}
+```
+
+Use this in the admin dashboard to display event risk information.
+
+---
+
+# 8. API Summary
+
+| Feature | Method | Endpoint | Role |
+|---|---|---|---|
+| Student Recommendations | POST | `/api/v1/ml/student/recommend` | USER |
+| Predict Registrations | POST | `/api/v1/ml/organizer/predict-registrations` | ORGANIZER |
+| Event Demand | GET | `/api/v1/ml/organizer/event-demand` | ORGANIZER |
+| Organizer Analytics | GET | `/api/v1/ml/organizer/analytics` | ORGANIZER |
+| Event Risk | POST | `/api/v1/ml/admin/event-risk` | ADMIN |
+
+---
+
+# 9. Axios Setup
+
+A common Axios instance can be created:
+
+```js
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: "http://localhost:8000/api/v1"
+});
+
+export default api;
+```
+
+Then:
+
+```js
+api.get("/ml/organizer/event-demand");
+```
+
+or:
+
+```js
+api.post("/ml/student/recommend", data);
+```
+
+For protected APIs:
+
+```js
+api.get("/ml/organizer/event-demand", {
+  headers: {
+    Authorization: `Bearer ${token}`
+  }
+});
+```
+
+---
+
+# 10. Example Student Recommendation Request
+
+```js
+const getRecommendations = async () => {
+  const response = await axios.post(
+    "http://localhost:8000/api/v1/ml/student/recommend",
+    {
+      domain: "Technology",
+      skills: "Python, Machine Learning",
+      year: "2",
+      branch: "CSE",
+      mode: "Any",
+      top_n: 5
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      }
+    }
+  );
+
+  console.log(response.data);
+};
+```
+
+---
+
+# 11. Example Organizer Analytics Request
+
+```js
+const getAnalytics = async () => {
+  const response = await axios.get(
+    "http://localhost:8000/api/v1/ml/organizer/analytics",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+
+  console.log(response.data);
+};
+```
+
+---
+
+# 12. Example Admin Risk Request
+
+```js
+const checkEventRisk = async (eventData) => {
+  const response = await axios.post(
+    "http://localhost:8000/api/v1/ml/admin/event-risk",
+    eventData,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      }
+    }
+  );
+
+  console.log(response.data);
+};
+```
+
+---
+
+# 13. Error Handling
+
+### 401 — Unauthorized
+
+Token is missing or expired.
+
+Frontend can redirect the user to Login.
+
+### 403 — Forbidden
+
+User does not have permission for the requested API.
+
+Example:
+
+```text
+USER trying to access ADMIN API
+```
+
+### 500 — Server Error
+
+Display a general message:
+
+```text
+Something went wrong. Please try again.
+```
+
+Do not display backend secrets or internal error details to users.
+
+---
+
+# 14. Important Frontend Rules
+
+## DO
+
+- Call the Node.js backend.
+- Send the JWT access token for protected APIs.
+- Send JSON request bodies where required.
+- Handle loading states.
+- Handle API errors.
+- Use the API contract documented here.
+
+## DON'T
+
+- Do not call the ML service directly.
+- Do not use port `5002` in frontend API calls.
+- Do not put the MongoDB URI in frontend code.
+- Do not put JWT secrets in frontend code.
+- Do not put the actual backend `.env` file in the frontend repository.
+- Do not expose backend secrets in browser code.
+
+---
+
+# 15. Local Development
+
+Start the Node.js backend:
+
+```bash
+npm install
+npm run dev
+```
+
+Backend:
+
+```text
+http://localhost:8000
+```
+
+The ML service runs separately on port `5002`.
+
+The frontend does not need to communicate directly with port `5002`.
+
+---
+
+# 16. Production
+
+During deployment, replace the local backend URL:
+
+```text
+http://localhost:8000
+```
+
+with the deployed Node.js backend URL.
+
+Example:
+
+```text
+https://your-backend-domain.com/api/v1
+```
+
+Production request flow:
+
+```text
+User Browser
+     |
+     v
+Frontend
+     |
+     v
+Node.js Backend
+     |
+     v
+ML / FastAPI Service
+```
+
+The Node.js backend handles communication with the ML service.
+
+---
+
+# 17. Quick Reference
+
+### Local Backend
+
+```text
+http://localhost:8000
+```
+
+### API Base
+
+```text
+http://localhost:8000/api/v1
+```
+
+### Student
+
+```text
+POST /ml/student/recommend
+```
+
+### Organizer
+
+```text
+POST /ml/organizer/predict-registrations
+GET  /ml/organizer/event-demand
+GET  /ml/organizer/analytics
+```
+
+### Admin
+
+```text
+POST /ml/admin/event-risk
+```
+
+---
+
+## 18. Backend–Frontend Coordination
+
+If the frontend needs a new field, response change, or another API, coordinate with the backend developer before changing the request structure.
+
+The frontend should follow the API contract documented in this file.
