@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+const mlRoutes = require("./src/routes/mlRoutes");
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -51,6 +52,11 @@ app.use(
 app.use(
   "/api/v1/admin",
   adminRoutes
+);
+
+app.use(
+  "/api/v1/ml",
+  mlRoutes
 );
 
 app.use(
