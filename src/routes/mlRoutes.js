@@ -8,12 +8,16 @@ const {
   predictRegistrations,
   eventDemand,
   organizerAnalytics,
-  eventRisk
+  eventRisk,
+   getDomains,
+  categorizeDomain,
+  analyzeSentiment,
+  analyzeSentimentBatch
 } = require("../controllers/mlController");
 
 const router = express.Router();
 
-router.post(
+router.post(                    //9 ML Routes
   "/student/recommend",
   auth,
   authorize("USER"),
@@ -46,6 +50,30 @@ router.post(
   auth,
   authorize("ADMIN"),
   eventRisk
+);
+
+router.get(
+  "/domains",
+  auth,
+  getDomains
+);
+
+router.post(
+  "/categorize",
+  auth,
+  categorizeDomain
+);
+
+router.post(
+  "/sentiment",
+  auth,
+  analyzeSentiment
+);
+
+router.post(
+  "/sentiment/batch",
+  auth,
+  analyzeSentimentBatch
 );
 
 module.exports = router;

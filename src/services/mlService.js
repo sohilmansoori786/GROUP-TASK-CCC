@@ -1,5 +1,5 @@
 const axios = require("axios");
-
+                                                 //9 ML api
 const ML_API_URL = process.env.ML_API_URL;
 
 const studentRecommend = async (data) => {
@@ -60,10 +60,64 @@ const eventRisk = async (data) => {
   return response.data;
 };
 
+const getDomains = async () => {
+  const response = await axios.get(
+    `${ML_API_URL}/domains`
+  );
+
+  return response.data;
+};
+
+const categorizeDomain = async (data) => {
+  const response = await axios.post(
+    `${ML_API_URL}/categorize`,
+    data,
+    {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }
+  );
+
+  return response.data;
+};
+
+const analyzeSentiment = async (data) => {
+  const response = await axios.post(
+    `${ML_API_URL}/sentiment`,
+    data,
+    {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }
+  );
+
+  return response.data;
+};
+
+const analyzeSentimentBatch = async (data) => {
+  const response = await axios.post(
+    `${ML_API_URL}/sentiment/batch`,
+    data,
+    {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }
+  );
+
+  return response.data;
+};
+
 module.exports = {
   studentRecommend,
   predictRegistrations,
   eventDemand,
   organizerAnalytics,
-  eventRisk
+  eventRisk,
+  getDomains,
+categorizeDomain,
+analyzeSentiment,
+analyzeSentimentBatch
 };

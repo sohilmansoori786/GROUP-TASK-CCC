@@ -55,13 +55,13 @@ app.use(
 );
 
 app.use(
-  "/api/v1/ml",
-  mlRoutes
+  "/api/v1/recommendations",
+  recommendationRoutes
 );
 
 app.use(
-  "/api/v1/recommendations",
-  recommendationRoutes
+  "/api/v1/ml",
+  mlRoutes
 );
 
 app.use(errorHandler);
