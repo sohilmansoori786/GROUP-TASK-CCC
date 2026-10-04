@@ -31,8 +31,7 @@ router.post(
   validate(loginSchema),
   login
 );
-router.post("/send-otp", authController.sendOTP);
-
-router.post("/verify-otp", authController.verifyOTP);
+router.post("/send-otp", authLimiter, sendOTP);
+router.post("/verify-otp", authLimiter, verifyOTP);
 
 module.exports = router;
