@@ -49,8 +49,7 @@ const login = async (req, res, next) => {
     next(error);
   }
 };
-
-const sendOTP = async (req, res, next) => {
+const sendOTP = async (req, res) => {
   try {
     const { email } = req.body;
 
@@ -63,13 +62,14 @@ const sendOTP = async (req, res, next) => {
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    let user = await User.findOne({
+    const user = await User.findOne({
       email: normalizedEmail
     });
 
     if (!user) {
-      user = new User({
-        email: normalizedEmail
+      return res.status(404).json({
+        success: false,
+        message: "User not found. Please signup first."
       });
     }
 
@@ -94,6 +94,7 @@ const sendOTP = async (req, res, next) => {
       success: true,
       message: "OTP sent successfully"
     });
+
   } catch (error) {
     console.error("SEND OTP ERROR:", error);
 
