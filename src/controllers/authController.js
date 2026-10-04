@@ -63,7 +63,9 @@ const sendOTP = async (req, res, next) => {
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    let user = await User.findOne({ email: normalizedEmail });
+    let user = await User.findOne({
+      email: normalizedEmail
+    });
 
     if (!user) {
       user = new User({
@@ -88,12 +90,17 @@ const sendOTP = async (req, res, next) => {
       text: `Your OTP is ${otp}. It will expire in 5 minutes.`
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "OTP sent successfully"
     });
   } catch (error) {
-    next(error);
+    console.error("SEND OTP ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
@@ -150,7 +157,7 @@ const verifyOTP = async (req, res, next) => {
 
     await user.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "OTP verified successfully"
     });
