@@ -1,4 +1,26 @@
 const authService = require("../services/authService");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
+const User = require("../models/user");
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+const generateOTP = () => {
+  return crypto.randomInt(100000, 1000000).toString();
+};
+
+const hashOTP = (otp) => {
+  return crypto
+    .createHash("sha256")
+    .update(otp)
+    .digest("hex");
+};
 
 const signup = async (req, res, next) => {
   try {
@@ -28,7 +50,118 @@ const login = async (req, res, next) => {
   }
 };
 
+const sendOTP = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required"
+      });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+
+    let user = await User.findOne({ email: normalizedEmail });
+
+    if (!user) {
+      user = new User({
+        email: normalizedEmail
+      });
+    }
+
+    const otp = generateOTP();
+
+    user.otpHash = hashOTP(otp);
+    user.otpExpires = new Date(Date.now() + 5 * 60 * 1000);
+    user.otpAttempts = 0;
+    user.otpVerified = false;
+    user.otpLastSentAt = new Date();
+
+    await user.save();
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: normalizedEmail,
+      subject: "Your Registration OTP",
+      text: `Your OTP is ${otp}. It will expire in 5 minutes.`
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "OTP sent successfully"
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const verifyOTP = async (req, res, next) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and OTP are required"
+      });
+    }
+
+    const user = await User.findOne({
+      email: email.toLowerCase().trim()
+    });
+
+    if (!user || !user.otpHash) {
+      return res.status(400).json({
+        success: false,
+        message: "Please request a new OTP"
+      });
+    }
+
+    if (user.otpExpires < new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP expired"
+      });
+    }
+
+    if (user.otpAttempts >= 5) {
+      return res.status(429).json({
+        success: false,
+        message: "Too many attempts. Please request a new OTP"
+      });
+    }
+
+    if (hashOTP(otp) !== user.otpHash) {
+      user.otpAttempts += 1;
+      await user.save();
+
+      return res.status(400).json({
+        success: false,
+        message: "Invalid OTP"
+      });
+    }
+
+    user.otpVerified = true;
+    user.otpHash = null;
+    user.otpExpires = null;
+    user.otpAttempts = 0;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "OTP verified successfully"
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   signup,
-  login
+  login,
+  sendOTP,
+  verifyOTP
 };

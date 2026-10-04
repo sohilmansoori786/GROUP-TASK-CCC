@@ -713,18 +713,14 @@ POST /ml/student/recommend
 ```
 
 ### Organizer
-
-```text
 POST /ml/organizer/predict-registrations
 GET  /ml/organizer/event-demand
 GET  /ml/organizer/analytics
-```
+
 
 ### Admin
-
-```text
 POST /ml/admin/event-risk
-```
+
 
 ---
 

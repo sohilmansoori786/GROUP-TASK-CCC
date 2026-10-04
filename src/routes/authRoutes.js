@@ -2,7 +2,9 @@ const express = require("express");
 
 const {
   signup,
-  login
+  login,
+  sendOTP,
+  verifyOTP
 } = require("../controllers/authController");
 
 const validate = require("../middleware/validate");
@@ -24,10 +26,13 @@ router.post(
 );
 
 router.post(
-  "/login",
+ "/login",
   authLimiter,
   validate(loginSchema),
   login
 );
+router.post("/send-otp", authController.sendOTP);
+
+router.post("/verify-otp", authController.verifyOTP);
 
 module.exports = router;
