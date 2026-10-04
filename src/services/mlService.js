@@ -1,11 +1,12 @@
 const axios = require("axios");
-                                                 //9 ML api
+
 const ML_API_URL_1 = process.env.ML_API_URL_1;
 const ML_API_URL_2 = process.env.ML_API_URL_2;
 
+// 1. Student Recommendation
 const studentRecommend = async (data) => {
   const response = await axios.post(
-    `${ML_API_URL}/student/recommend`,
+    `${ML_API_URL_1}/student/recommend`,
     data,
     {
       headers: {
@@ -17,9 +18,10 @@ const studentRecommend = async (data) => {
   return response.data;
 };
 
+// 2. Predict Registrations
 const predictRegistrations = async (data) => {
   const response = await axios.post(
-    `${ML_API_URL}/organizer/predict-registrations`,
+    `${ML_API_URL_1}/organizer/predict-registrations`,
     data,
     {
       headers: {
@@ -31,25 +33,28 @@ const predictRegistrations = async (data) => {
   return response.data;
 };
 
+// 3. Event Demand
 const eventDemand = async () => {
   const response = await axios.get(
-    `${ML_API_URL}/organizer/event-demand`
+    `${ML_API_URL_1}/organizer/event-demand`
   );
 
   return response.data;
 };
 
+// 4. Organizer Analytics
 const organizerAnalytics = async () => {
   const response = await axios.get(
-    `${ML_API_URL}/organizer/analytics`
+    `${ML_API_URL_1}/organizer/analytics`
   );
 
   return response.data;
 };
 
+// 5. Event Risk
 const eventRisk = async (data) => {
   const response = await axios.post(
-    `${ML_API_URL}/admin/event-risk`,
+    `${ML_API_URL_1}/admin/event-risk`,
     data,
     {
       headers: {
@@ -61,17 +66,19 @@ const eventRisk = async (data) => {
   return response.data;
 };
 
+// 6. Get Domains
 const getDomains = async () => {
   const response = await axios.get(
-    `${ML_API_URL}/domains`
+    `${ML_API_URL_2}/domains`
   );
 
   return response.data;
 };
 
+// 7. Categorize Domain
 const categorizeDomain = async (data) => {
   const response = await axios.post(
-    `${ML_API_URL}/categorize`,
+    `${ML_API_URL_2}/categorize`,
     data,
     {
       headers: {
@@ -83,9 +90,10 @@ const categorizeDomain = async (data) => {
   return response.data;
 };
 
+// 8. Sentiment Analysis
 const analyzeSentiment = async (data) => {
   const response = await axios.post(
-    `${ML_API_URL}/sentiment`,
+    `${ML_API_URL_2}/sentiment`,
     data,
     {
       headers: {
@@ -97,9 +105,10 @@ const analyzeSentiment = async (data) => {
   return response.data;
 };
 
+// 9. Batch Sentiment Analysis
 const analyzeSentimentBatch = async (data) => {
   const response = await axios.post(
-    `${ML_API_URL}/sentiment/batch`,
+    `${ML_API_URL_2}/sentiment/batch`,
     data,
     {
       headers: {
@@ -118,7 +127,7 @@ module.exports = {
   organizerAnalytics,
   eventRisk,
   getDomains,
-categorizeDomain,
-analyzeSentiment,
-analyzeSentimentBatch
+  categorizeDomain,
+  analyzeSentiment,
+  analyzeSentimentBatch
 };
