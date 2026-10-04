@@ -79,8 +79,26 @@ const saveOpportunity = async (req, res, next) => {
   }
 };
 
+const getMyApplications = async (req, res, next) => {
+  try {
+    const Application = require("../models/Appilication"); 
+    const applications = await Application.find({ user: req.user.userId })
+      .populate("opportunity")
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      count: applications.length,
+      applications
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getProfile,
   updateSkills,
-  saveOpportunity
+  saveOpportunity,
+  getMyApplications
 };

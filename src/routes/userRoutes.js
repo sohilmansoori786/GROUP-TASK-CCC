@@ -5,7 +5,8 @@ const auth = require("../middleware/auth");
 const {
   getProfile,
   updateSkills,
-  saveOpportunity
+  saveOpportunity,
+  getMyApplications
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -18,6 +19,12 @@ router.post(
   "/save/:opportunityId",
   auth,
   saveOpportunity
+);
+
+router.get(
+  "/applications",
+  auth,
+  getMyApplications
 );
 
 module.exports = router;

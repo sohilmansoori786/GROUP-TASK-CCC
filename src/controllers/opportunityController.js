@@ -91,10 +91,61 @@ const recommendations = async (req, res, next) => {
   }
 };
 
+const getApplicants = async (req, res, next) => {
+  try {
+    const applicants = await opportunityService.getApplicants(
+      req.params.id,
+      req.user.userId
+    );
+    res.json({
+      success: true,
+      count: applicants.length,
+      applicants
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateOpportunity = async (req, res, next) => {
+  try {
+    const opportunity = await opportunityService.updateOpportunity(
+      req.params.id,
+      req.body,
+      req.user.userId
+    );
+    res.json({
+      success: true,
+      message: "Opportunity updated",
+      opportunity
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteOpportunity = async (req, res, next) => {
+  try {
+    const result = await opportunityService.deleteOpportunity(
+      req.params.id,
+      req.user.userId
+    );
+    res.json({
+      success: true,
+      message: result.message
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createOpportunity,
   getOpportunities,
   getOpportunity,
   apply,
-  recommendations
+  recommendations,
+  getApplicants,
+  updateOpportunity,
+  deleteOpportunity
 };

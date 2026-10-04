@@ -14,7 +14,10 @@ const {
   getOpportunities,
   getOpportunity,
   apply,
-  recommendations
+  recommendations,
+  getApplicants,
+  updateOpportunity,
+  deleteOpportunity
 } = require("../controllers/opportunityController");
 
 const router = express.Router();
@@ -37,6 +40,28 @@ router.post(
   createOpportunity
 );
 
-router.post("/:id/apply", auth, apply);
+router.get(
+  "/:id/applicants",
+  auth,
+  authorize("ORGANIZER", "ADMIN"),
+  getApplicants
+);
+
+router.put(
+  "/:id",
+  auth,
+  authorize("ORGANIZER", "ADMIN"),
+  validate(opportunitySchema),
+  updateOpportunity
+);
+
+router.delete(
+  "/:id",
+  auth,
+  authorize("ORGANIZER", "ADMIN"),
+  deleteOpportunity
+);
+
+router.post("/:id/apply", auth, authorize("USER"), apply);
 
 module.exports = router;
