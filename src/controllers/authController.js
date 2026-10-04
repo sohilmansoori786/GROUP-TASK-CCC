@@ -95,12 +95,20 @@ const sendOTP = async (req, res, next) => {
 
     await user.save();
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: normalizedEmail,
-      subject: "Your Registration OTP",
-      text: `Your OTP is ${otp}. It will expire in 5 minutes.`
-    });
+    try {
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: normalizedEmail,
+        subject: "Your Registration OTP",
+        text: `Your OTP is ${otp}. It will expire in 5 minutes.`
+      });
+    } catch (mailError) {
+      console.error("Nodemailer Error:", mailError);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to send OTP email. Please verify your SMTP credentials (like App Password) in the .env file."
+      });
+    }
 
     return res.status(200).json({
       success: true,
@@ -212,12 +220,20 @@ const forgotPassword = async (req, res, next) => {
 
     await user.save();
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: normalizedEmail,
-      subject: "Password Reset OTP",
-      text: `Your password reset OTP is ${otp}. It will expire in 10 minutes.`
-    });
+    try {
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: normalizedEmail,
+        subject: "Password Reset OTP",
+        text: `Your password reset OTP is ${otp}. It will expire in 10 minutes.`
+      });
+    } catch (mailError) {
+      console.error("Nodemailer Error:", mailError);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to send OTP email. Please verify your SMTP credentials (like App Password) in the .env file."
+      });
+    }
 
     return res.status(200).json({
       success: true,
