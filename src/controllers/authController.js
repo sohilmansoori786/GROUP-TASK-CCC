@@ -95,6 +95,10 @@ const sendOTP = async (req, res, next) => {
 
     await user.save();
 
+    console.log(`\n========================================`);
+    console.log(`[TESTING] Registration OTP for ${normalizedEmail}: ${otp}`);
+    console.log(`========================================\n`);
+
     try {
       await transporter.sendMail({
         from: process.env.EMAIL_USER,
@@ -112,7 +116,8 @@ const sendOTP = async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
-      message: "OTP sent successfully"
+      message: "OTP sent successfully",
+      test_otp: otp
     });
   } catch (error) {
     console.error("SEND OTP ERROR:", error);
@@ -203,11 +208,10 @@ const forgotPassword = async (req, res, next) => {
       email: normalizedEmail
     });
 
-    // Don't reveal whether email exists
     if (!user) {
-      return res.status(200).json({
-        success: true,
-        message: "If the email exists, a password reset OTP has been sent."
+      return res.status(404).json({
+        success: false,
+        message: "User with this email does not exist. Please check for typos or sign up first."
       });
     }
 
@@ -219,6 +223,10 @@ const forgotPassword = async (req, res, next) => {
     );
 
     await user.save();
+
+    console.log(`\n========================================`);
+    console.log(`[TESTING] Password Reset OTP for ${normalizedEmail}: ${otp}`);
+    console.log(`========================================\n`);
 
     try {
       await transporter.sendMail({
@@ -237,7 +245,8 @@ const forgotPassword = async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
-      message: "If the email exists, a password reset OTP has been sent."
+      message: "OTP has been generated successfully.",
+      test_otp: otp
     });
   } catch (error) {
     console.error("FORGOT PASSWORD ERROR:", error);
@@ -325,7 +334,7 @@ const changePassword = async (req, res, next) => {
       });
     }
 
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     await authService.changePassword(
       userId,

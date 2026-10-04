@@ -28,7 +28,9 @@ const getRecommendations = async (user) => {
             error.response?.data || error.message
         );
 
-        throw new Error("Failed to get recommendations");
+        const err = new Error("Failed to get recommendations");
+        err.statusCode = 500;
+        throw err;
     }
 };
 

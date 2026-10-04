@@ -28,11 +28,15 @@ const applyToOpportunity = async (
   );
 
   if (!opportunity) {
-    throw new Error("Opportunity not found");
+    const err = new Error("Opportunity not found");
+    err.statusCode = 404;
+    throw err;
   }
 
   if (opportunity.deadline < new Date()) {
-    throw new Error("Application deadline has passed");
+    const err = new Error("Application deadline has passed");
+    err.statusCode = 400;
+    throw err;
   }
 
   const application = await Application.create({

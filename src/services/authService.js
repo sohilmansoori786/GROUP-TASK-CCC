@@ -17,7 +17,9 @@ const signup = async ({ name, email, password }) => {
   });
 
   if (existingUser) {
-    throw new Error("Email already registered");
+    const err = new Error("Email already registered");
+    err.statusCode = 200;
+    throw err;
   }
 
   const hashedPassword = await argon2.hash(password);
@@ -45,11 +47,15 @@ const login = async ({ email, password }) => {
   });
 
   if (!user) {
-    throw new Error("Invalid email or password");
+    const err = new Error("Invalid email or password");
+    err.statusCode = 401;
+    throw err;
   }
 
   if (user.lockUntil && user.lockUntil > new Date()) {
-    throw new Error("Account temporarily locked");
+    const err = new Error("Account temporarily locked");
+    err.statusCode = 403;
+    throw err;
   }
 
   const validPassword = await argon2.verify(
@@ -68,7 +74,9 @@ const login = async ({ email, password }) => {
 
     await user.save();
 
-    throw new Error("Invalid email or password");
+    const err = new Error("Invalid email or password");
+    err.statusCode = 401;
+    throw err;
   }
 
   user.failedLoginAttempts = 0;
@@ -176,18 +184,24 @@ const resetPassword = async (
   });
 
   if (!user) {
-    throw new Error("Invalid or expired OTP");
+    const err = new Error("Invalid or expired OTP");
+    err.statusCode = 400;
+    throw err;
   }
 
   if (
     !user.resetPasswordTokenHash ||
     !user.resetPasswordExpiresAt
   ) {
-    throw new Error("Invalid or expired OTP");
+    const err = new Error("Invalid or expired OTP");
+    err.statusCode = 400;
+    throw err;
   }
 
   if (user.resetPasswordExpiresAt < new Date()) {
-    throw new Error("OTP expired");
+    const err = new Error("OTP expired");
+    err.statusCode = 400;
+    throw err;
   }
 
   const otpHash = crypto
@@ -196,7 +210,9 @@ const resetPassword = async (
     .digest("hex");
 
   if (otpHash !== user.resetPasswordTokenHash) {
-    throw new Error("Invalid OTP");
+    const err = new Error("Invalid OTP");
+    err.statusCode = 400;
+    throw err;
   }
 
   user.password = await argon2.hash(newPassword);
@@ -225,7 +241,9 @@ const changePassword = async (
   const user = await User.findById(userId);
 
   if (!user) {
-    throw new Error("User not found");
+    const err = new Error("User not found");
+    err.statusCode = 404;
+    throw err;
   }
 
   const validPassword = await argon2.verify(
@@ -234,13 +252,15 @@ const changePassword = async (
   );
 
   if (!validPassword) {
-    throw new Error("Current password is incorrect");
+    const err = new Error("Current password is incorrect");
+    err.statusCode = 400;
+    throw err;
   }
 
   if (currentPassword === newPassword) {
-    throw new Error(
-      "New password must be different from current password"
-    );
+    const err = new Error("New password must be different from current password");
+    err.statusCode = 400;
+    throw err;
   }
 
   user.password = await argon2.hash(newPassword);
