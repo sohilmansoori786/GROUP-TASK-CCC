@@ -4,14 +4,14 @@ const nodemailer = require("nodemailer");
 const User = require("../models/user");
 
 const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
   },
-    connectionTimeout: 10000,
+  connectionTimeout: 10000,
   greetingTimeout: 10000,
   socketTimeout: 10000
 });
@@ -27,6 +27,8 @@ const hashOTP = (otp) => {
     .digest("hex");
 };
 
+// ================= SIGNUP =================
+
 const signup = async (req, res, next) => {
   try {
     const user = await authService.signup(req.body);
@@ -41,6 +43,8 @@ const signup = async (req, res, next) => {
   }
 };
 
+// ================= LOGIN =================
+
 const login = async (req, res, next) => {
   try {
     const result = await authService.login(req.body);
@@ -54,7 +58,10 @@ const login = async (req, res, next) => {
     next(error);
   }
 };
-const sendOTP = async (req, res) => {
+
+// ================= SEND REGISTRATION OTP =================
+
+const sendOTP = async (req, res, next) => {
   try {
     const { email } = req.body;
 
@@ -99,16 +106,13 @@ const sendOTP = async (req, res) => {
       success: true,
       message: "OTP sent successfully"
     });
-
   } catch (error) {
     console.error("SEND OTP ERROR:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    next(error);
   }
 };
+
+// ================= VERIFY REGISTRATION OTP =================
 
 const verifyOTP = async (req, res, next) => {
   try {
@@ -132,7 +136,7 @@ const verifyOTP = async (req, res, next) => {
       });
     }
 
-    if (user.otpExpires < new Date()) {
+    if (!user.otpExpires || user.otpExpires < new Date()) {
       return res.status(400).json({
         success: false,
         message: "OTP expired"
@@ -172,9 +176,162 @@ const verifyOTP = async (req, res, next) => {
   }
 };
 
+// ================= FORGOT PASSWORD =================
+
+const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required"
+      });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const user = await User.findOne({
+      email: normalizedEmail
+    });
+
+    // Don't reveal whether email exists
+    if (!user) {
+      return res.status(200).json({
+        success: true,
+        message: "If the email exists, a password reset OTP has been sent."
+      });
+    }
+
+    const otp = generateOTP();
+
+    user.resetPasswordTokenHash = hashOTP(otp);
+    user.resetPasswordExpiresAt = new Date(
+      Date.now() + 10 * 60 * 1000
+    );
+
+    await user.save();
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: normalizedEmail,
+      subject: "Password Reset OTP",
+      text: `Your password reset OTP is ${otp}. It will expire in 10 minutes.`
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "If the email exists, a password reset OTP has been sent."
+    });
+  } catch (error) {
+    console.error("FORGOT PASSWORD ERROR:", error);
+    next(error);
+  }
+};
+
+// ================= RESET PASSWORD =================
+
+const resetPassword = async (req, res, next) => {
+  try {
+    const {
+      email,
+      otp,
+      newPassword
+    } = req.body;
+
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Email, OTP and new password are required"
+      });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const user = await User.findOne({
+      email: normalizedEmail
+    });
+
+    if (!user || !user.resetPasswordTokenHash) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired OTP"
+      });
+    }
+
+    if (
+      !user.resetPasswordExpiresAt ||
+      user.resetPasswordExpiresAt < new Date()
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP expired. Please request a new OTP."
+      });
+    }
+
+    const hashedOTP = hashOTP(otp);
+
+    if (hashedOTP !== user.resetPasswordTokenHash) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid OTP"
+      });
+    }
+
+    await authService.resetPassword(
+      normalizedEmail,
+      otp,
+      newPassword
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Password reset successfully"
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ================= CHANGE PASSWORD =================
+
+const changePassword = async (req, res, next) => {
+  try {
+    const {
+      currentPassword,
+      newPassword
+    } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Current password and new password are required"
+      });
+    }
+
+    const userId = req.user.id;
+
+    await authService.changePassword(
+      userId,
+      currentPassword,
+      newPassword
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Password changed successfully"
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   signup,
   login,
   sendOTP,
-  verifyOTP
+  verifyOTP,
+  forgotPassword,
+  resetPassword,
+  changePassword
 };

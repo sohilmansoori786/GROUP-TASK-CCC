@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const argon2 = require("argon2");
 const User = require("../models/user");
 const RefreshToken = require("../models/RefreshToken");
@@ -35,6 +36,7 @@ const signup = async ({ name, email, password }) => {
   };
 };
 
+
 const login = async ({ email, password }) => {
   const normalizedEmail = email.toLowerCase().trim();
 
@@ -71,6 +73,7 @@ const login = async ({ email, password }) => {
 
   user.failedLoginAttempts = 0;
   user.lockUntil = null;
+
   await user.save();
 
   const accessToken = createAccessToken(user);
@@ -100,7 +103,160 @@ const login = async ({ email, password }) => {
   };
 };
 
+
+/*
+  FORGOT PASSWORD
+  Generates a 6-digit OTP.
+*/
+
+const forgotPassword = async (email) => {
+  const normalizedEmail = email.toLowerCase().trim();
+
+  const user = await User.findOne({
+    email: normalizedEmail
+  });
+
+  /*
+    Don't reveal whether the email exists.
+  */
+  if (!user) {
+    return {
+      message:
+        "If the email exists, a password reset OTP has been sent."
+    };
+  }
+
+  const otp = crypto
+    .randomInt(100000, 1000000)
+    .toString();
+
+  const otpHash = crypto
+    .createHash("sha256")
+    .update(otp)
+    .digest("hex");
+
+  user.resetPasswordTokenHash = otpHash;
+
+  user.resetPasswordExpiresAt = new Date(
+    Date.now() + 10 * 60 * 1000
+  );
+
+  await user.save();
+
+  /*
+    TEMPORARY:
+    Replace this console.log with your email service.
+  */
+
+  console.log(
+    `Password reset OTP for ${user.email}: ${otp}`
+  );
+
+  return {
+    message:
+      "If the email exists, a password reset OTP has been sent."
+  };
+};
+
+
+/*
+  RESET PASSWORD
+  Verifies OTP and updates password.
+*/
+
+const resetPassword = async (
+  email,
+  otp,
+  newPassword
+) => {
+  const normalizedEmail = email.toLowerCase().trim();
+
+  const user = await User.findOne({
+    email: normalizedEmail
+  });
+
+  if (!user) {
+    throw new Error("Invalid or expired OTP");
+  }
+
+  if (
+    !user.resetPasswordTokenHash ||
+    !user.resetPasswordExpiresAt
+  ) {
+    throw new Error("Invalid or expired OTP");
+  }
+
+  if (user.resetPasswordExpiresAt < new Date()) {
+    throw new Error("OTP expired");
+  }
+
+  const otpHash = crypto
+    .createHash("sha256")
+    .update(otp)
+    .digest("hex");
+
+  if (otpHash !== user.resetPasswordTokenHash) {
+    throw new Error("Invalid OTP");
+  }
+
+  user.password = await argon2.hash(newPassword);
+
+  user.resetPasswordTokenHash = null;
+  user.resetPasswordExpiresAt = null;
+
+  await user.save();
+
+  return {
+    message: "Password reset successfully"
+  };
+};
+
+
+/*
+  CHANGE PASSWORD
+  Used by an already logged-in user.
+*/
+
+const changePassword = async (
+  userId,
+  currentPassword,
+  newPassword
+) => {
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const validPassword = await argon2.verify(
+    user.password,
+    currentPassword
+  );
+
+  if (!validPassword) {
+    throw new Error("Current password is incorrect");
+  }
+
+  if (currentPassword === newPassword) {
+    throw new Error(
+      "New password must be different from current password"
+    );
+  }
+
+  user.password = await argon2.hash(newPassword);
+
+  await user.save();
+
+  return {
+    message: "Password changed successfully"
+  };
+};
+
+
 module.exports = {
   signup,
-  login
+  login,
+  forgotPassword,
+  resetPassword,
+  changePassword
 };
