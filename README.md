@@ -22,6 +22,11 @@ Welcome to the **Opportunity Hub & Event Management System** backend API documen
 | `Content-Type` | All `POST`, `PUT`, `PATCH` requests | `application/json` | Specifies JSON body payload |
 | `Authorization`| Protected Endpoints | `Bearer <accessToken>` | JWT access token received on Login |
 
+### ⏳ Token Lifespan
+- **Access Token (`accessToken`):** Valid for **1 day** (`1d`).
+- **Refresh Token (`refreshToken`):** Valid for **7 days**.
+*(Note: If the access token expires, the client will receive a `401 Unauthorized` error and must re-login).*
+
 ### User Roles & Access Hierarchy
 - **`USER`**: Students / regular candidates (default role upon signup).
 - **`ORGANIZER`**: Event organizers with permissions to create, update, delete opportunities and access organizer ML analytics.
