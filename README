@@ -88,10 +88,54 @@ All authentication endpoints (`/api/v1/auth/*`) are protected by a rate limiter 
 > **Base Route:** `/api/v1/auth`  
 > **Rate Limit:** 10 requests / 15 minutes per IP
 
-### 1.1 User Signup
+### 1.1 Send Registration OTP
+- **Method:** `POST`
+- **Endpoint:** `/api/v1/auth/send-otp`
+- **Auth Required:** ❌ None
+- **Headers:** `Content-Type: application/json`
+- **Request Body:**
+```json
+{
+  "email": "alex.johnson@example.com"
+}
+```
+- **Response (`200 OK`):**
+```json
+{
+  "success": true,
+  "message": "OTP sent successfully",
+  "test_otp": "209208"
+}
+```
+
+---
+
+### 1.2 Verify Registration OTP
+- **Method:** `POST`
+- **Endpoint:** `/api/v1/auth/verify-otp`
+- **Auth Required:** ❌ None
+- **Headers:** `Content-Type: application/json`
+- **Request Body:**
+```json
+{
+  "email": "alex.johnson@example.com",
+  "otp": "209208"
+}
+```
+- **Response (`200 OK`):**
+```json
+{
+  "success": true,
+  "message": "OTP verified successfully. You can now signup."
+}
+```
+
+---
+
+### 1.3 User Signup
 - **Method:** `POST`
 - **Endpoint:** `/api/v1/auth/signup`
-- **Auth Required:** ❌ None
+- **Auth Required:** ❌ None (Requires verified OTP first)
 - **Headers:** `Content-Type: application/json`
 - **Request Body:**
 ```json
@@ -119,7 +163,7 @@ All authentication endpoints (`/api/v1/auth/*`) are protected by a rate limiter 
 
 ---
 
-### 1.2 User Login
+### 1.4 User Login
 - **Method:** `POST`
 - **Endpoint:** `/api/v1/auth/login`
 - **Auth Required:** ❌ None
@@ -149,7 +193,7 @@ All authentication endpoints (`/api/v1/auth/*`) are protected by a rate limiter 
 
 ---
 
-### 1.2.1 User Logout
+### 1.5 User Logout
 - **Method:** `POST`
 - **Endpoint:** `/api/v1/auth/logout`
 - **Auth Required:** ❌ None (but needs `refreshToken`)
@@ -165,50 +209,6 @@ All authentication endpoints (`/api/v1/auth/*`) are protected by a rate limiter 
 {
   "success": true,
   "message": "Logged out successfully"
-}
-```
-
----
-
-### 1.3 Send Registration OTP
-- **Method:** `POST`
-- **Endpoint:** `/api/v1/auth/send-otp`
-- **Auth Required:** ❌ None
-- **Headers:** `Content-Type: application/json`
-- **Request Body:**
-```json
-{
-  "email": "alex.johnson@example.com"
-}
-```
-- **Response (`200 OK`):**
-```json
-{
-  "success": true,
-  "message": "OTP sent successfully",
-  "test_otp": "209208"
-}
-```
-
----
-
-### 1.4 Verify Registration OTP
-- **Method:** `POST`
-- **Endpoint:** `/api/v1/auth/verify-otp`
-- **Auth Required:** ❌ None
-- **Headers:** `Content-Type: application/json`
-- **Request Body:**
-```json
-{
-  "email": "alex.johnson@example.com",
-  "otp": "209208"
-}
-```
-- **Response (`200 OK`):**
-```json
-{
-  "success": true,
-  "message": "OTP verified successfully"
 }
 ```
 
