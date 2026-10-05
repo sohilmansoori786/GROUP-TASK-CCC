@@ -5,7 +5,9 @@ const signupSchema = z.object({
 
   email: z.string().email(),
 
-  password: z.string().min(8).max(128)
+  password: z.string().min(8).max(128),
+
+  role: z.enum(["USER", "ORGANIZER", "ADMIN"]).optional()
 });
 
 const loginSchema = z.object({
