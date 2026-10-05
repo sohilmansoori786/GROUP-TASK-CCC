@@ -1,0 +1,20 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/api/v1/auth/verify-otp
+method: POST
+headers:
+  Authorization: "{{json_web_token_0l2n}}"
+body:
+  type: json
+  content: "{\r
+
+    \  \"email\": \"sohil2510197@akgec.ac.in\",\r
+
+    \  \"otp\":\"614266\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_0s9u}}"
+order: 3285087616531390
