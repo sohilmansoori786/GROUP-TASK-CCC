@@ -98,10 +98,11 @@ All authentication endpoints (`/api/v1/auth/*`) are protected by a rate limiter 
 {
   "name": "Alex Johnson",
   "email": "alex.johnson@example.com",
-  "password": "StrongPassword123!"
+  "password": "StrongPassword123!",
+  "role": "ORGANIZER" 
 }
 ```
-*(Password must be at least 8 characters)*
+*(Password must be at least 8 characters. `role` is optional and defaults to `"USER"`. Can be `"USER"`, `"ORGANIZER"`, or `"ADMIN"`).*
 - **Response (`201 Created`):**
 ```json
 {
@@ -111,7 +112,7 @@ All authentication endpoints (`/api/v1/auth/*`) are protected by a rate limiter 
     "id": "6ac34e2c6f61537f06a6de5d",
     "name": "Alex Johnson",
     "email": "alex.johnson@example.com",
-    "role": "USER"
+    "role": "ORGANIZER"
   }
 }
 ```
