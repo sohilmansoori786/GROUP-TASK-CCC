@@ -12,7 +12,7 @@ const router = express.Router();
 router.get(
   "/users",
   auth,
-  authorize("ADMIN"),
+  authorize("ADMIN", "ORGANIZER"),
   getUsers
 );
 
