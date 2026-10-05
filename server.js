@@ -68,10 +68,15 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 8000;
 
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error("Failed to connect to database. Server not started.", error);
+    process.exit(1);
   });
-});
 
 module.exports = app;

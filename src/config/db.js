@@ -8,14 +8,12 @@ const connectDB = async () => {
   }
 
   try {
-    const db = await mongoose.connect(process.env.MONGO_URL, {
-      serverSelectionTimeoutMS: 5000,
-    });
+    const db = await mongoose.connect(process.env.MONGO_URL);
     isConnected = db.connections[0].readyState;
     console.log("MongoDB connected successfully");
   } catch (error) {
     console.error("MongoDB connection failed:", error.message);
-    // Do NOT call process.exit(1) on serverless platforms
+    throw error;
   }
 };
 
