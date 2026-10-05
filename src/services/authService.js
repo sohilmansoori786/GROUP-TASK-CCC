@@ -9,7 +9,7 @@ const {
   hashToken
 } = require("../utils/token");
 
-const signup = async ({ name, email, password }) => {
+const signup = async ({ name, email, password, role }) => {
   const normalizedEmail = email.toLowerCase().trim();
 
   const existingUser = await User.findOne({
@@ -24,10 +24,14 @@ const signup = async ({ name, email, password }) => {
 
   const hashedPassword = await argon2.hash(password);
 
+  // Default to USER if no role is provided or if it's invalid
+  const assignedRole = (role === "ORGANIZER" || role === "ADMIN") ? role : "USER";
+
   const user = await User.create({
     name,
     email: normalizedEmail,
-    password: hashedPassword
+    password: hashedPassword,
+    role: assignedRole
   });
 
   return {
