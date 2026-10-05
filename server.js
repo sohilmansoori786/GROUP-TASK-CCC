@@ -17,15 +17,6 @@ const errorHandler = require("./src/middleware/errorHandler");
 
 const app = express();
 
-app.use(async (req, res, next) => {
-  try {
-    await connectDB();
-    next();
-  } catch (error) {
-    next(error);
-  }
-});
-
 app.use(helmet());
 
 app.use(
@@ -77,8 +68,10 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 8000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
 });
 
 module.exports = app;
