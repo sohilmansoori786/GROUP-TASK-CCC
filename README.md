@@ -149,6 +149,27 @@ All authentication endpoints (`/api/v1/auth/*`) are protected by a rate limiter 
 
 ---
 
+### 1.2.1 User Logout
+- **Method:** `POST`
+- **Endpoint:** `/api/v1/auth/logout`
+- **Auth Required:** ❌ None (but needs `refreshToken`)
+- **Headers:** `Content-Type: application/json`
+- **Request Body:**
+```json
+{
+  "refreshToken": "48b61c94d039e71..."
+}
+```
+- **Response (`200 OK`):**
+```json
+{
+  "success": true,
+  "message": "Logged out successfully"
+}
+```
+
+---
+
 ### 1.3 Send Registration OTP
 - **Method:** `POST`
 - **Endpoint:** `/api/v1/auth/send-otp`

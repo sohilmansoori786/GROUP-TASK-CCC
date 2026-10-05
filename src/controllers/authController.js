@@ -343,9 +343,34 @@ const changePassword = async (req, res, next) => {
   }
 };
 
+// ================= LOGOUT =================
+
+const logout = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+    
+    if (!refreshToken) {
+      return res.status(400).json({
+        success: false,
+        message: "Refresh token is required"
+      });
+    }
+
+    const result = await authService.logout(refreshToken);
+
+    return res.status(200).json({
+      success: true,
+      message: result.message
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   signup,
   login,
+  logout,
   sendOTP,
   verifyOTP,
   forgotPassword,

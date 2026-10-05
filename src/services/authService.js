@@ -268,9 +268,28 @@ const changePassword = async (
 };
 
 
+/*
+  LOGOUT
+  Revokes the refresh token.
+*/
+const logout = async (refreshToken) => {
+  if (!refreshToken) {
+    const err = new Error("Refresh token is required");
+    err.statusCode = 400;
+    throw err;
+  }
+
+  const tokenHash = hashToken(refreshToken);
+  
+  await RefreshToken.findOneAndDelete({ tokenHash });
+
+  return { message: "Logged out successfully" };
+};
+
 module.exports = {
   signup,
   login,
+  logout,
   forgotPassword,
   resetPassword,
   changePassword

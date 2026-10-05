@@ -3,6 +3,7 @@ const express = require("express");
 const {
   signup,
   login,
+  logout,
   sendOTP,
   verifyOTP,
   forgotPassword,
@@ -36,6 +37,13 @@ router.post(
   authLimiter,
   validate(loginSchema),
   login
+);
+
+// Logout
+router.post(
+  "/logout",
+  authLimiter,
+  logout
 );
 
 // Registration OTP
