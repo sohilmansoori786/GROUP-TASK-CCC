@@ -20,7 +20,7 @@ const router = express.Router();
 router.post(                    //9 ML Routes
   "/student/recommend",
   auth,
-  authorize("USER"),
+  authorize("USER", "ORGANIZER"),
   studentRecommend
 );
 
