@@ -9,6 +9,12 @@ const opportunitySchema = new mongoose.Schema(
       maxlength: 200
     },
 
+    status: {
+      type: String,
+      enum: ["Pending", "Approved", "Rejected"],
+      default: "Pending"
+    },
+
     description: {
       type: String,
       required: true,
