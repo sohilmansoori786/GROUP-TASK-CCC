@@ -95,10 +95,6 @@ const sendOTP = async (req, res, next) => {
 
     await user.save();
 
-    console.log(`\n========================================`);
-    console.log(`[TESTING] Registration OTP for ${normalizedEmail}: ${otp}`);
-    console.log(`========================================\n`);
-
     try {
       await transporter.sendMail({
         from: process.env.EMAIL_USER,
@@ -223,10 +219,6 @@ const forgotPassword = async (req, res, next) => {
     );
 
     await user.save();
-
-    console.log(`\n========================================`);
-    console.log(`[TESTING] Password Reset OTP for ${normalizedEmail}: ${otp}`);
-    console.log(`========================================\n`);
 
     try {
       await transporter.sendMail({

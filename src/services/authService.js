@@ -151,15 +151,6 @@ const forgotPassword = async (email) => {
 
   await user.save();
 
-  /*
-    TEMPORARY:
-    Replace this console.log with your email service.
-  */
-
-  console.log(
-    `Password reset OTP for ${user.email}: ${otp}`
-  );
-
   return {
     message:
       "If the email exists, a password reset OTP has been sent."

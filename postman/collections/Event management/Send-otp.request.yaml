@@ -1,5 +1,4 @@
 $kind: http-request
-name: https://backend-task-3-zr8a.vercel.app/api/v1/auth/send-otp
 description: ""
 url: https://backend-task-3-zr8a.vercel.app/api/v1/auth/send-otp
 method: POST
