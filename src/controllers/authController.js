@@ -2,6 +2,7 @@ const authService = require("../services/authService");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const User = require("../models/user");
+const OTP = require("../models/OTP");
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -78,22 +79,32 @@ const sendOTP = async (req, res, next) => {
       email: normalizedEmail
     });
 
-    if (!user) {
-      return res.status(404).json({
+    if (user) {
+      return res.status(400).json({
         success: false,
-        message: "User not found. Please signup first."
+        message: "Email already registered. Please login."
       });
     }
 
     const otp = generateOTP();
+    const hashedOTP = hashOTP(otp);
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
-    user.otpHash = hashOTP(otp);
-    user.otpExpires = new Date(Date.now() + 5 * 60 * 1000);
-    user.otpAttempts = 0;
-    user.otpVerified = false;
-    user.otpLastSentAt = new Date();
-
-    await user.save();
+    let otpRecord = await OTP.findOne({ email: normalizedEmail });
+    
+    if (otpRecord) {
+      otpRecord.otpHash = hashedOTP;
+      otpRecord.expiresAt = expiresAt;
+      otpRecord.attempts = 0;
+      otpRecord.verified = false;
+      await otpRecord.save();
+    } else {
+      await OTP.create({
+        email: normalizedEmail,
+        otpHash: hashedOTP,
+        expiresAt: expiresAt
+      });
+    }
 
     try {
       await transporter.sendMail({
@@ -134,34 +145,36 @@ const verifyOTP = async (req, res, next) => {
       });
     }
 
-    const user = await User.findOne({
-      email: email.toLowerCase().trim()
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const otpRecord = await OTP.findOne({
+      email: normalizedEmail
     });
 
-    if (!user || !user.otpHash) {
+    if (!otpRecord || !otpRecord.otpHash) {
       return res.status(400).json({
         success: false,
         message: "Please request a new OTP"
       });
     }
 
-    if (!user.otpExpires || user.otpExpires < new Date()) {
+    if (!otpRecord.expiresAt || otpRecord.expiresAt < new Date()) {
       return res.status(400).json({
         success: false,
         message: "OTP expired"
       });
     }
 
-    if (user.otpAttempts >= 5) {
+    if (otpRecord.attempts >= 5) {
       return res.status(429).json({
         success: false,
         message: "Too many attempts. Please request a new OTP"
       });
     }
 
-    if (hashOTP(otp) !== user.otpHash) {
-      user.otpAttempts += 1;
-      await user.save();
+    if (hashOTP(otp) !== otpRecord.otpHash) {
+      otpRecord.attempts += 1;
+      await otpRecord.save();
 
       return res.status(400).json({
         success: false,
@@ -169,16 +182,16 @@ const verifyOTP = async (req, res, next) => {
       });
     }
 
-    user.otpVerified = true;
-    user.otpHash = null;
-    user.otpExpires = null;
-    user.otpAttempts = 0;
+    otpRecord.verified = true;
+    otpRecord.otpHash = "VERIFIED";
+    otpRecord.expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours to signup
+    otpRecord.attempts = 0;
 
-    await user.save();
+    await otpRecord.save();
 
     return res.status(200).json({
       success: true,
-      message: "OTP verified successfully"
+      message: "OTP verified successfully. You can now signup."
     });
   } catch (error) {
     next(error);

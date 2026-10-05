@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const argon2 = require("argon2");
 const User = require("../models/user");
 const RefreshToken = require("../models/RefreshToken");
+const OTP = require("../models/OTP");
 
 const {
   createAccessToken,
@@ -22,6 +23,14 @@ const signup = async ({ name, email, password, role }) => {
     throw err;
   }
 
+  const otpRecord = await OTP.findOne({ email: normalizedEmail });
+
+  if (!otpRecord || !otpRecord.verified) {
+    const err = new Error("Email not verified. Please verify your OTP first.");
+    err.statusCode = 400;
+    throw err;
+  }
+
   const hashedPassword = await argon2.hash(password);
 
   // Default to USER if no role is provided or if it's invalid
@@ -33,6 +42,9 @@ const signup = async ({ name, email, password, role }) => {
     password: hashedPassword,
     role: assignedRole
   });
+
+  // Cleanup OTP record
+  await OTP.deleteOne({ email: normalizedEmail });
 
   return {
     id: user._id,
