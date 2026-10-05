@@ -8,12 +8,12 @@ const helmet = require("helmet");
 const connectDB = require("./src/config/db");
 
 const authRoutes = require("./src/routes/authRoutes");
-const userRoutes = require("./src/routes/userRoutes");
-const opportunityRoutes = require("./src/routes/opportunityRoutes");
-const adminRoutes = require("./src/routes/adminRoutes");
-const recommendationRoutes = require("./src/routes/recommendationRoutes");
+const userRoutes = require("./src/routes/userRoutes");                            
+const opportunityRoutes = require("./src/routes/opportunityRoutes");     
+const adminRoutes = require("./src/routes/adminRoutes");                           
+const recommendationRoutes = require("./src/routes/recommendationRoutes");      
 
-const errorHandler = require("./src/middleware/errorHandler");
+const errorHandler = require("./src/middleware/errorHandler");                  
 
 const app = express();
 

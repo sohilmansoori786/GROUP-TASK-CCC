@@ -30,6 +30,9 @@ Welcome to the **Opportunity Hub & Event Management System** backend API documen
 ### ⏱️ Rate Limiting Notice
 All authentication endpoints (`/api/v1/auth/*`) are protected by a rate limiter allowing a maximum of **10 requests per 15 minutes** per IP address. Exceeding this limit will return HTTP `429 Too Many Requests`.
 
+### 🌍 CORS Policy
+Cross-Origin Resource Sharing (CORS) is enabled globally (`origin: "*"`). Frontend applications hosted on any domain (localhost, Vercel, Netlify, etc.) can seamlessly communicate with this backend.
+
 ---
 
 ## 🚦 Standard Status Codes & Error Format
