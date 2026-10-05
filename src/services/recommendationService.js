@@ -3,7 +3,7 @@ const axios = require("axios");
 const getRecommendations = async (user) => {
     try {
         const response = await axios.post(
-            `${process.env.ML_API_URL_1}/student/recommend`,
+            `${process.env.ML_API_URL_1 || process.env.ML_API_URL}/student/recommend`,
             {
                 domain: user.domain,
                 skills: Array.isArray(user.skills)
