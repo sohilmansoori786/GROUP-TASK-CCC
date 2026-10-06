@@ -95,7 +95,7 @@ const getApplicants = async (req, res, next) => {
   try {
     const applicants = await opportunityService.getApplicants(
       req.params.id,
-      req.user.userId
+      req.user
     );
     res.json({
       success: true,
@@ -112,7 +112,7 @@ const updateOpportunity = async (req, res, next) => {
     const opportunity = await opportunityService.updateOpportunity(
       req.params.id,
       req.body,
-      req.user.userId
+      req.user
     );
     res.json({
       success: true,
@@ -128,7 +128,7 @@ const deleteOpportunity = async (req, res, next) => {
   try {
     const result = await opportunityService.deleteOpportunity(
       req.params.id,
-      req.user.userId
+      req.user
     );
     res.json({
       success: true,

@@ -58,14 +58,14 @@ const applyToOpportunity = async (
   return application;
 };
 
-const getApplicants = async (opportunityId, userId) => {
+const getApplicants = async (opportunityId, user) => {
   const opportunity = await Opportunity.findById(opportunityId);
   if (!opportunity) {
     const err = new Error("Opportunity not found");
     err.statusCode = 404;
     throw err;
   }
-  if (opportunity.createdBy.toString() !== userId.toString()) {
+  if (opportunity.createdBy.toString() !== user.userId.toString() && user.role !== 'ADMIN') {
     const err = new Error("Not authorized to view applicants for this opportunity");
     err.statusCode = 403;
     throw err;
@@ -75,14 +75,14 @@ const getApplicants = async (opportunityId, userId) => {
     .sort({ createdAt: -1 });
 };
 
-const updateOpportunity = async (opportunityId, data, userId) => {
+const updateOpportunity = async (opportunityId, data, user) => {
   const opportunity = await Opportunity.findById(opportunityId);
   if (!opportunity) {
     const err = new Error("Opportunity not found");
     err.statusCode = 404;
     throw err;
   }
-  if (opportunity.createdBy.toString() !== userId.toString()) {
+  if (opportunity.createdBy.toString() !== user.userId.toString() && user.role !== 'ADMIN') {
     const err = new Error("Not authorized to update this opportunity");
     err.statusCode = 403;
     throw err;
@@ -90,14 +90,14 @@ const updateOpportunity = async (opportunityId, data, userId) => {
   return Opportunity.findByIdAndUpdate(opportunityId, data, { new: true });
 };
 
-const deleteOpportunity = async (opportunityId, userId) => {
+const deleteOpportunity = async (opportunityId, user) => {
   const opportunity = await Opportunity.findById(opportunityId);
   if (!opportunity) {
     const err = new Error("Opportunity not found");
     err.statusCode = 404;
     throw err;
   }
-  if (opportunity.createdBy.toString() !== userId.toString()) {
+  if (opportunity.createdBy.toString() !== user.userId.toString() && user.role !== 'ADMIN') {
     const err = new Error("Not authorized to delete this opportunity");
     err.statusCode = 403;
     throw err;

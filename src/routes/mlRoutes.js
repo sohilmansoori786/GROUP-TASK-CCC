@@ -1,3 +1,4 @@
+
 const express = require("express");
 
 const auth = require("../middleware/auth");
@@ -9,7 +10,7 @@ const {
   eventDemand,
   organizerAnalytics,
   eventRisk,
-   getDomains,
+  getDomains,
   categorizeDomain,
   analyzeSentiment,
   analyzeSentimentBatch

@@ -124,7 +124,7 @@ module.exports = {
   organizerAnalytics,
   eventRisk,
   getDomains,
-categorizeDomain,
-analyzeSentiment,
-analyzeSentimentBatch
+  categorizeDomain,
+  analyzeSentiment,
+  analyzeSentimentBatch
 };
