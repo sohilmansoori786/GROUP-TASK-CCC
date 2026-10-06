@@ -4,6 +4,7 @@ const mlRoutes = require("./src/routes/mlRoutes");
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
+const cookieParser = require("cookie-parser");
 
 const connectDB = require("./src/config/db");
 
@@ -32,6 +33,8 @@ app.use(
     limit: "100kb"
   })
 );
+
+app.use(cookieParser());
 
 app.get("/", (req, res) => {
   res.json({

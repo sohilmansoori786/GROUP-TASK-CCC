@@ -1,0 +1,19 @@
+$kind: http-request
+name: /api/v1/ml/categorize
+description: ""
+url: https://backend-task-3-zr8a.vercel.app/api/v1/ml/categorize
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: "{\r
+
+    \  \"skills_text\": \"Machine Learning, PyTorch, Deep Neural Networks, Computer Vision\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_06cu}}"
+order: 4460673837643396

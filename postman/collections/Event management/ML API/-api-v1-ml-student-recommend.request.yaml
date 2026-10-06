@@ -1,0 +1,29 @@
+$kind: http-request
+name: /api/v1/ml/student/recommend
+description: ""
+url: https://backend-task-3-zr8a.vercel.app/api/v1/ml/student/recommend
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: "{\r
+
+    \  \"domain\": \"Web Development\",\r
+
+    \  \"skills\": \"JavaScript, React, Node.js\",\r
+
+    \  \"year\": 3,\r
+
+    \  \"branch\": \"CSE\",\r
+
+    \  \"mode\": \"Online\",\r
+
+    \  \"top_n\": 5\r
+
+    }\r\n"
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_06cu}}"
+order: 1791287035222

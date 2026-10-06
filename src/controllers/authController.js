@@ -50,6 +50,14 @@ const login = async (req, res, next) => {
   try {
     const result = await authService.login(req.body);
 
+    // Set token in HTTP-only cookie
+    res.cookie("jwt_token", result.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      sameSite: "strict"
+    });
+
     res.status(200).json({
       success: true,
       message: "Login successful",
@@ -370,6 +378,9 @@ const logout = async (req, res, next) => {
     }
 
     const result = await authService.logout(refreshToken);
+
+    // Clear the cookie on logout
+    res.clearCookie("jwt_token");
 
     return res.status(200).json({
       success: true,

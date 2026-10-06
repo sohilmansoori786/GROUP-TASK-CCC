@@ -1,0 +1,19 @@
+$kind: http-request
+name: /api/v1/ml/sentiment
+description: ""
+url: https://backend-task-3-zr8a.vercel.app/api/v1/ml/sentiment
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: "{\r
+
+    \  \"review_text\": \"The speaker was excellent and the hands-on session was very helpful!\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_06cu}}"
+order: 4473961742782392

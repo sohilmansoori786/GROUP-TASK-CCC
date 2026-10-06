@@ -1,0 +1,21 @@
+$kind: http-request
+name: /api/v1/ml/admin/event-risk
+description: ""
+url: https://backend-task-3-zr8a.vercel.app/api/v1/ml/admin/event-risk
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: "{\r
+
+    \  \"budget\": 50000,\r
+
+    \  \"expected_attendees\": 500\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_06cu}}"
+order: 3725774725991146

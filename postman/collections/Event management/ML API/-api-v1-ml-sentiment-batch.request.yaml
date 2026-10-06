@@ -1,0 +1,27 @@
+$kind: http-request
+name: /api/v1/ml/sentiment/batch
+description: ""
+url: https://backend-task-3-zr8a.vercel.app/api/v1/ml/sentiment/batch
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: "{\r
+
+    \  \"reviews\": [\r
+
+    \    \"Amazing workshop, learned a lot!\",\r
+
+    \    \"Audio quality was poor and hard to follow.\",\r
+
+    \    \"Decent overview of the topic.\"\r
+
+    \  ]\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{json_web_token_06cu}}"
+order: 4499187471101453
