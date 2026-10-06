@@ -20,28 +20,28 @@ const router = express.Router();
 router.post(                    //9 ML Routes
   "/student/recommend",
   auth,
-  authorize("USER", "ORGANIZER"),
+  authorize("USER", "ORGANIZER", "ADMIN"),
   studentRecommend
 );
 
 router.post(
   "/organizer/predict-registrations",
   auth,
-  authorize("ORGANIZER"),
+  authorize("ORGANIZER", "ADMIN"),
   predictRegistrations
 );
 
 router.get(
   "/organizer/event-demand",
   auth,
-  authorize("ORGANIZER"),
+  authorize("ORGANIZER", "ADMIN"),
   eventDemand
 );
 
 router.get(
   "/organizer/analytics",
   auth,
-  authorize("ORGANIZER"),
+  authorize("ORGANIZER", "ADMIN"),
   organizerAnalytics
 );
 

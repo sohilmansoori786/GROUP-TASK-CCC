@@ -1,6 +1,9 @@
 const authorize = (...roles) => {
   return (req, res, next) => {
-    if (!req.user || !roles.includes(req.user.role)) {
+    const userRole = (req.user?.role || "").toUpperCase();
+    const normalizedRoles = roles.map((r) => r.toUpperCase());
+
+    if (!req.user || (!normalizedRoles.includes(userRole) && userRole !== "ADMIN")) {
       return res.status(403).json({
         success: false,
         message: "Access denied"
