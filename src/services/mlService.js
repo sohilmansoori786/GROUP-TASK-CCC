@@ -120,6 +120,21 @@ const analyzeSentimentBatch = async (data) => {
   return response.data;
 };
 
+// 10. AI Chatbot (Gemini Assistant)
+const chat = async (data) => {
+  const response = await axios.post(
+    `${ML_API_URL_1}/chat`,
+    data,
+    {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }
+  );
+
+  return response.data;
+};
+
 module.exports = {
   studentRecommend,
   predictRegistrations,
@@ -129,5 +144,6 @@ module.exports = {
   getDomains,
   categorizeDomain,
   analyzeSentiment,
-  analyzeSentimentBatch
+  analyzeSentimentBatch,
+  chat
 };

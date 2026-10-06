@@ -117,6 +117,19 @@ const analyzeSentimentBatch = async (req, res, next) => {
   }
 };
 
+const chat = async (req, res, next) => {
+  try {
+    const result = await mlService.chat(req.body);
+
+    res.json({
+      success: true,
+      data: result
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   studentRecommend,
   predictRegistrations,
@@ -126,5 +139,6 @@ module.exports = {
   getDomains,
   categorizeDomain,
   analyzeSentiment,
-  analyzeSentimentBatch
+  analyzeSentimentBatch,
+  chat
 };

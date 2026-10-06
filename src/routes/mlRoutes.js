@@ -13,7 +13,8 @@ const {
   getDomains,
   categorizeDomain,
   analyzeSentiment,
-  analyzeSentimentBatch
+  analyzeSentimentBatch,
+  chat
 } = require("../controllers/mlController");
 
 const router = express.Router();
@@ -75,6 +76,13 @@ router.post(
   "/sentiment/batch",
   auth,
   analyzeSentimentBatch
+);
+
+router.post(
+  "/chat",
+  auth,
+  authorize("USER", "ORGANIZER", "ADMIN"),
+  chat
 );
 
 module.exports = router;

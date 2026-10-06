@@ -69,7 +69,7 @@ Cross-Origin Resource Sharing (CORS) is enabled globally (`origin: "*"`). Fronte
 - [2. User Management (`/api/v1/users`)](#2-user-management)
 - [3. Opportunities (`/api/v1/opportunities`)](#3-opportunities)
 - [4. Recommendations (`/api/v1/recommendations`)](#4-recommendations)
-- [5. Machine Learning (`/api/v1/ml`)](#5-machine-learning)
+- [5. Machine Learning (`/`)](#5-machine-learning)
 - [6. Admin Management (`/api/v1/admin`)](#6-admin-management)
 
 ---
@@ -673,12 +673,12 @@ Cross-Origin Resource Sharing (CORS) is enabled globally (`origin: "*"`). Fronte
 
 ## 5. Machine Learning
 
-> **Base Route:** `/api/v1/ml`  
+> **Base Route:** `/`  
 > ⚠️ **Note:** Microservices on Render may take 30–45s on cold starts. Once active, response times are ~500–1000ms.
 
 ### 5.1 Student Event Recommendations
 - **Method:** `POST`
-- **Endpoint:** `/api/v1/ml/student/recommend`
+- **Endpoint:** `/student/recommend`
 - **Auth Required:** ✅ YES (`USER` role required)
 - **Headers:**  
   `Content-Type: application/json`  
@@ -715,7 +715,7 @@ Cross-Origin Resource Sharing (CORS) is enabled globally (`origin: "*"`). Fronte
 
 ### 5.2 Predict Event Registrations (Organizer)
 - **Method:** `POST`
-- **Endpoint:** `/api/v1/ml/organizer/predict-registrations`
+- **Endpoint:** `/organizer/predict-registrations`
 - **Auth Required:** ✅ YES (`ORGANIZER` role required)
 - **Headers:**  
   `Content-Type: application/json`  
@@ -742,7 +742,7 @@ Cross-Origin Resource Sharing (CORS) is enabled globally (`origin: "*"`). Fronte
 
 ### 5.3 Organizer Event Demand Analytics
 - **Method:** `GET`
-- **Endpoint:** `/api/v1/ml/organizer/event-demand`
+- **Endpoint:** `/organizer/event-demand`
 - **Auth Required:** ✅ YES (`ORGANIZER` role required)
 - **Headers:** `Authorization: Bearer <accessToken>`
 - **Response (`200 OK`):**
@@ -769,7 +769,7 @@ Cross-Origin Resource Sharing (CORS) is enabled globally (`origin: "*"`). Fronte
 
 ### 5.4 Organizer Platform Statistics
 - **Method:** `GET`
-- **Endpoint:** `/api/v1/ml/organizer/analytics`
+- **Endpoint:** `/organizer/analytics`
 - **Auth Required:** ✅ YES (`ORGANIZER` role required)
 - **Headers:** `Authorization: Bearer <accessToken>`
 - **Response (`200 OK`):**
@@ -799,7 +799,7 @@ Cross-Origin Resource Sharing (CORS) is enabled globally (`origin: "*"`). Fronte
 
 ### 5.5 Event Risk Assessment (Admin)
 - **Method:** `POST`
-- **Endpoint:** `/api/v1/ml/admin/event-risk`
+- **Endpoint:** `/admin/event-risk`
 - **Auth Required:** ✅ YES (`ADMIN` role required)
 - **Headers:**  
   `Content-Type: application/json`  
@@ -828,7 +828,7 @@ Cross-Origin Resource Sharing (CORS) is enabled globally (`origin: "*"`). Fronte
 
 ### 5.6 Get Supported Technical Domains
 - **Method:** `GET`
-- **Endpoint:** `/api/v1/ml/domains`
+- **Endpoint:** `/domains`
 - **Auth Required:** ✅ YES (Any Authenticated User)
 - **Headers:** `Authorization: Bearer <accessToken>`
 - **Response (`200 OK`):**
@@ -858,7 +858,7 @@ Cross-Origin Resource Sharing (CORS) is enabled globally (`origin: "*"`). Fronte
 
 ### 5.7 Categorize Skills / Event to Domain
 - **Method:** `POST`
-- **Endpoint:** `/api/v1/ml/categorize`
+- **Endpoint:** `/categorize`
 - **Auth Required:** ✅ YES (Any Authenticated User)
 - **Headers:**  
   `Content-Type: application/json`  
@@ -884,7 +884,7 @@ Cross-Origin Resource Sharing (CORS) is enabled globally (`origin: "*"`). Fronte
 
 ### 5.8 Single Review Sentiment Analysis
 - **Method:** `POST`
-- **Endpoint:** `/api/v1/ml/sentiment`
+- **Endpoint:** `/sentiment`
 - **Auth Required:** ✅ YES (Any Authenticated User)
 - **Headers:**  
   `Content-Type: application/json`  
@@ -910,7 +910,7 @@ Cross-Origin Resource Sharing (CORS) is enabled globally (`origin: "*"`). Fronte
 
 ### 5.9 Batch Sentiment Analysis
 - **Method:** `POST`
-- **Endpoint:** `/api/v1/ml/sentiment/batch`
+- **Endpoint:** `/sentiment/batch`
 - **Auth Required:** ✅ YES (Any Authenticated User)
 - **Headers:**  
   `Content-Type: application/json`  
@@ -952,6 +952,33 @@ Cross-Origin Resource Sharing (CORS) is enabled globally (`origin: "*"`). Fronte
         "confidence": 0.65
       }
     ]
+  }
+}
+```
+
+---
+
+### 5.10 AI Chatbot (Gemini Assistant)
+- **Method:** `POST`
+- **Endpoint:** `/chat`
+- **Auth Required:** ✅ YES (`USER`, `ORGANIZER`, or `ADMIN` role required)
+- **Headers:**  
+  `Content-Type: application/json`  
+  `Authorization: Bearer <accessToken>`
+- **Request Body:**
+```json
+{
+  "message": "Which skills should I learn for Full Stack Web Development?",
+  "previous_interaction_id": "optional_previous_id"
+}
+```
+- **Response (`200 OK`):**
+```json
+{
+  "success": true,
+  "data": {
+    "reply": "To excel in Full Stack Web Development, focus on React, Node.js, Express, and MongoDB...",
+    "interaction_id": "interaction_xyz123"
   }
 }
 ```
@@ -1000,11 +1027,11 @@ Cross-Origin Resource Sharing (CORS) is enabled globally (`origin: "*"`). Fronte
 1. **Token Persistence & Refresh:**  
    Store `accessToken` in memory or secure storage. Use `Authorization: Bearer <accessToken>` in your Axios or Fetch interceptor.
 2. **Handle Cold Starts Gracefully:**  
-   When calling `/api/v1/ml/*` and `/api/v1/opportunities/recommendations`, display an informative loading state (e.g. *"AI models are initializing..."*) because Render spin-up can take 30–45s on idle.
+   When calling `/*` and `/api/v1/opportunities/recommendations`, display an informative loading state (e.g. *"AI models are initializing..."*) because Render spin-up can take 30–45s on idle.
 3. **Respect Rate Limits:**  
    Do not continuously retry `/api/v1/auth/*` requests if you receive a `429` error. Wait until the 15-minute window resets.
 4. **Exact Field Match for ML:**  
-   - For `/api/v1/ml/categorize`: send `{ "skills_text": "..." }`.
-   - For `/api/v1/ml/sentiment`: send `{ "review_text": "..." }`.
-   - For `/api/v1/ml/sentiment/batch`: send `{ "reviews": ["...", "..."] }`.
-   - For `/api/v1/ml/student/recommend`: send `skills` as a comma-separated string (e.g. `"React, Node.js"`).
+   - For `/categorize`: send `{ "skills_text": "..." }`.
+   - For `/sentiment`: send `{ "review_text": "..." }`.
+   - For `/sentiment/batch`: send `{ "reviews": ["...", "..."] }`.
+   - For `/student/recommend`: send `skills` as a comma-separated string (e.g. `"React, Node.js"`).
