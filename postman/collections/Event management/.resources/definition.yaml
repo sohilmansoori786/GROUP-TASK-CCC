@@ -12,3 +12,9 @@ variables:
   - key: json_web_token_06cu
     secret: true
     disabled: false
+  - key: json_web_token_14i6
+    secret: true
+    disabled: false
+  - key: json_web_token_0uha
+    secret: true
+    disabled: false

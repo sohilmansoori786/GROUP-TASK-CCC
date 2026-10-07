@@ -1,5 +1,5 @@
 $kind: http-request
-name: /api/v1/ml/organizer/event-demand
+name: /organizer/event-demand
 description: ""
 url: https://backend-task-3-zr8a.vercel.app/api/v1/ml/organizer/event-demand
 method: GET

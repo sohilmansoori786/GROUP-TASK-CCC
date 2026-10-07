@@ -1,0 +1,5 @@
+$kind: http-request
+name: /api/v1/users/skills
+url: ""
+method: PATCH
+order: 1345104370063

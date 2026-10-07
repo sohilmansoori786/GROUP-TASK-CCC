@@ -1,4 +1,5 @@
 $kind: http-request
+name: /api/v1/auth/send-otp
 description: ""
 url: https://backend-task-3-zr8a.vercel.app/api/v1/auth/send-otp
 method: POST
@@ -9,4 +10,4 @@ body:
     \    \"email\":\"sohil2510197@akgec.ac.in\"\r
 
     }"
-order: 47941693189
+order: 1791313557810

@@ -1,7 +1,7 @@
 $kind: http-request
-name: /api/v1/ml/student/recommend
+name: /student/recommend
 description: ""
-url: https://backend-task-3-zr8a.vercel.app/api/v1/ml/student/recommend
+url: https://backend-task-3-zr8a.vercel.app/student/recommend
 method: POST
 headers:
   Content-Type: application/json

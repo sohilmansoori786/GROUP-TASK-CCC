@@ -1,0 +1,17 @@
+$kind: http-request
+name: /api/v1/auth/login
+description: ""
+url: https://backend-task-3-zr8a.vercel.app/api/v1/auth/login
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"email\": \"sohil2510197@akgec.ac.in\",\r
+
+    \  \"password\": \"sohil@786\"\r
+
+    }"
+auth:
+  type: bearer
+order: 3946554216377586

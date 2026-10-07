@@ -1,14 +1,17 @@
 $kind: http-request
+name: /api/v1/auth/signup
 description: ""
-url: https://backend-task-3-zr8a.vercel.app/api/v1/auth/login
+url: https://backend-task-3-zr8a.vercel.app/api/v1/auth/signup
 method: POST
 body:
   type: json
   content: "{\r
+
+    \  \"name\": \"Love Varshney\",\r
 
     \  \"email\": \"love2410084@akgec.ac.in\",\r
 
     \  \"password\": \"love@7002\"\r
 
     }"
-order: 508081404849
+order: 2870070175836891

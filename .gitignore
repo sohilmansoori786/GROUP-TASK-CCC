@@ -2,3 +2,4 @@ node_modules/
 .env
 frontend_temp/
 auth_concepts.md
+allapis.md

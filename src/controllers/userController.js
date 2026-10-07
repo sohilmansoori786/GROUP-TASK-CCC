@@ -72,7 +72,8 @@ const saveOpportunity = async (req, res, next) => {
 
     res.json({
       success: true,
-      message: "Opportunity saved"
+      message: "Opportunity saved",
+      savedOpportunities: user.savedOpportunities
     });
   } catch (error) {
     next(error);

@@ -1,5 +1,5 @@
 $kind: http-request
-name: /api/v1/ml/organizer/analytics
+name: /organizer/analytics
 description: ""
 url: https://backend-task-3-zr8a.vercel.app/api/v1/ml/organizer/analytics
 method: GET
@@ -7,4 +7,4 @@ auth:
   type: bearer
   credentials:
     token: "{{json_web_token_06cu}}"
-order: 2855536636768087
+order: 1605616750342097

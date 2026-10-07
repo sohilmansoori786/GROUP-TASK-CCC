@@ -1,0 +1,5 @@
+$kind: http-request
+name: /api/v1/users/applications
+url: ""
+method: GET
+order: 1923575809195592
